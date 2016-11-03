@@ -4,7 +4,7 @@ This is a dockerized Carto(DB) installation, based on the official [Carto Instal
 You should be able to map most of the steps in the `Dockerfile` with those on the install documentation. The steps below were written with a Digital Ocean droplet (docker pre-installed) in mind.
 
 ##Build the Container
-Go make a sandwich, this will take a while...
+Go make a sandwich, this will take a while... (About an hour)
 ```
 git clone https://github.com/chriswhong/docker-cartodb.git
 docker build -t="cartodb" docker-cartodb/
