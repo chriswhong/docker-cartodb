@@ -30,3 +30,9 @@ and an organization with a default account: admin4example/pass1234
 Coming Soon
 
 ##To configure SSL
+
+##Attribution
+This was inspired by and largely based on [Stefan Verhoeven's image](https://github.com/sverhoeven/docker-cartodb).  
+
+##Pull requests and issues welcomed!
+If this doesn't work for you, please open an issue and let's figure out why.
