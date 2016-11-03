@@ -39,20 +39,12 @@ cd cartodb-postgresql &&\
 PGUSER=postgres make install
 
 #GIS dependencies
-RUN apt-get upgrade -q -y && add-apt-repository ppa:cartodb/gis && apt-get update
-
-#proj4
-RUN apt-get install -q -y proj proj-bin proj-data libproj-dev
-
-#json
-RUN apt-get install -q -y libjson0 libjson0-dev python-simplejson
-
-#geos
-RUN apt-get install -q -y libgeos-c1v5 libgeos-dev
-
-#gdal
-RUN apt-get install -q -y gdal-bin libgdal1-dev libgdal-dev &&\
-apt-get install -q -y gdal2.1-static-bin
+RUN apt-get upgrade -q -y && add-apt-repository ppa:cartodb/gis && apt-get update &&\
+ apt-get install -q -y proj proj-bin proj-data libproj-dev &&\ 
+ apt-get install -q -y libjson0 libjson0-dev python-simplejson &&\ 
+ apt-get install -q -y libgeos-c1v5 libgeos-dev &&\ 
+ apt-get install -q -y gdal-bin libgdal1-dev libgdal-dev &&\
+ apt-get install -q -y gdal2.1-static-bin
 
 #postgis
 RUN apt-get -q -y install libxml2-dev &&\
@@ -125,20 +117,29 @@ ADD ./config/CartoDB-dev.js \
 ADD ./config/WS-dev.js \
       /Windshaft-cartodb/config/environments/development.js
 ADD ./config/app_config.yml /cartodb/config/app_config.yml
-
-
 ADD ./config/database.yml /cartodb/config/database.yml
 
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+
+RUN cd cartodb &&\
+    npm install npm@2.14.9 -g &&\
+    npm -v &&\
+    export PATH=$PATH:$PWD/node_modules/grunt-cli/bin &&\
+    bundle install &&\
+    bundle exec grunt --environment development
+
 RUN service postgresql start && service redis-server start &&\
-    cd cartodb && bundle exec rake db:create &&\ 
-    bundle exec rake db:migrate &&\
+    cd cartodb &&\
+    RAILS_ENV=development bundle exec rake db:create &&\ 
+    RAILS_ENV=development bundle exec rake db:migrate &&\
     service postgresql stop && service redis-server stop
 
 ADD ./create_dev_user /cartodb/script/create_dev_user
 ADD ./setup_organization.sh /cartodb/script/setup_organization.sh
-ENV PATH=$PATH:$HOME/bin:/var/lib/gems/1.8/bin
-RUN mkdir -p /cartodb/log && touch /cartodb/log/users_modifications
-RUN cd cartodb && bundle update  
 RUN service postgresql start && service redis-server start && \
 	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && bash script/setup_organization.sh" && \
 	service postgresql stop && service redis-server stop
@@ -146,7 +147,7 @@ RUN service postgresql start && service redis-server start && \
 
 EXPOSE 3000 8080 8181
 
-ENV GDAL_DATA /usr/share/gdal/1.10
+ENV GDAL_DATA /usr/share/gdal/2.1
 
 ADD ./startup.sh /opt/startup.sh
 
