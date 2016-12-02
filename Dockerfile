@@ -4,6 +4,15 @@ RUN locale-gen en_US.UTF-8 &&\
 RUN apt-get update &&\
 apt-get install -q -y autoconf binutils-doc bison build-essential flex
 
+#apt-utils
+RUN apt-get install -q -y apt-utils
+
+#ruby-rvm
+RUN apt-get install -q -y ruby-rvm
+
+#varnish
+RUN apt-get install -q -y varnish
+
 #git
 RUN apt-get install -q -y git
 
