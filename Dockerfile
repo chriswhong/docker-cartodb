@@ -75,7 +75,7 @@ npm install
 #MAPS API:
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git &&\
 cd Windshaft-cartodb &&\
-git checkout master &&\
+git checkout 2.87.3 &&\
 apt-get install -q -y libpango1.0-dev &&\
 npm install
 
