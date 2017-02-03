@@ -21,8 +21,22 @@ var config = {
     // Base url for the Detached Maps API
     // "maps" is the the new API,
     // "tiles/layergroup" is for compatibility with versions up to 1.6.x
-    ,base_url_detached: '(?:/api/v1/map|/user/:user/api/v1/map|/tiles/layergroup)'
-
+    ,base_url_detached: '(?:/api/v1/map|/user/:user/api/v1/map|/tiles/layergroup)' 
+    // Resource URLs expose endpoints to request/retrieve metadata associated to Maps: dataviews, analysis node status.
+    //
+    // This URLs depend on how `base_url_detached` and `user_from_host` are configured: the application can be
+    // configured to accept request with the {user} in the header host or in the request path.
+    // It also might depend on the configured cdn_url via `serverMetadata.cdn_url`.
+    //
+    // This template allows to make the endpoints generation more flexible, the template exposes the following params:
+    //  1. {{=it.cdn_url}}: will be used when `serverMetadata.cdn_url` exists.
+    //  2. {{=it.user}}: will use the username as extraced from `user_from_host` or `base_url_detached`.
+    //  3. {{=it.port}}: will use the `port` from this very same configuration file.
+    //,serverMetadata : { cdn_url : {http: '127.0.0.1', https: '127.0.0.1'}}
+    ,resources_url_templates: {
+        http: 'http://cartodb.localhost:{{=it.port}}/user/{{=it.user}}/api/v1/map',
+        https: 'http://localhost.lan:{{=it.port}}/user/{{=it.user}}/api/v1/map'
+    }
     // Maximum number of connections for one process
     // 128 is a good value with a limit of 1024 open file descriptors
     ,maxConnections:128
