@@ -1,5 +1,5 @@
 var config = {
-     environment: 'development'
+     environment: 'production'
     ,port: 8181
     ,host: '0.0.0.0'
     // Size of the threadpool which can be used to run user code and get notified in the loop thread
@@ -58,7 +58,7 @@ var config = {
     ,log_filename: undefined
     // Templated database username for authorized user
     // Supported labels: 'user_id' (read from redis)
-    ,postgres_auth_user: 'development_cartodb_user_<%= user_id %>'
+    ,postgres_auth_user: 'cartodb_user_<%= user_id %>'
     // Templated database password for authorized user
     // Supported labels: 'user_id', 'user_password' (both read from redis)
     ,postgres_auth_pass: '<%= user_password %>'

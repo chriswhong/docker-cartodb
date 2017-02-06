@@ -110,7 +110,7 @@ wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py &&\
 python /tmp/get-pip.py &&\
 apt-get install -q -y python-all-dev &&\
 apt-get install -q -y imagemagick unp zip &&\
-RAILS_ENV=development bundle install &&\
+RAILS_ENV=production bundle install &&\
 npm install 
 
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
@@ -122,11 +122,13 @@ RUN cd cartodb && pip install --no-use-wheel -r python_requirements.txt
 
 #Config Files
 ADD ./config/CartoDB-dev.js \
-      /CartoDB-SQL-API/config/environments/development.js
+      /CartoDB-SQL-API/config/environments/production.js
 ADD ./config/WS-dev.js \
-      /Windshaft-cartodb/config/environments/development.js
+      /Windshaft-cartodb/config/environments/production.js
 ADD ./config/app_config.yml /cartodb/config/app_config.yml
 ADD ./config/database.yml /cartodb/config/database.yml
+ADD ./config/grunt_production.json /cartodb/config/grunt_production.json
+
 
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -139,12 +141,12 @@ RUN cd cartodb &&\
     npm -v &&\
     export PATH=$PATH:$PWD/node_modules/grunt-cli/bin &&\
     bundle install &&\
-    bundle exec grunt --environment development
+    bundle exec grunt --environment production
 
 RUN service postgresql start && service redis-server start &&\
     cd cartodb &&\
-    RAILS_ENV=development bundle exec rake db:create &&\ 
-    RAILS_ENV=development bundle exec rake db:migrate &&\
+    RAILS_ENV=production bundle exec rake db:create &&\ 
+    RAILS_ENV=production bundle exec rake db:migrate &&\
     service postgresql stop && service redis-server stop
 
 ADD ./create_dev_user /cartodb/script/create_dev_user
