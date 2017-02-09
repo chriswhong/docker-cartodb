@@ -1,44 +1,53 @@
 # docker-cartodb
-This is a dockerized Carto(DB) installation, based on the official [Carto Installation Documentation](http://cartodb.readthedocs.io/en/latest/install.html), using the latest dependencies including ogr2ogr2.1
+This is a dockerized production Carto(DB) installation, based on the official [Carto Installation Documentation](http://cartodb.readthedocs.io/en/latest/install.html), using the latest dependencies including ogr2ogr2.1.  
 
 You should be able to map most of the steps in the `Dockerfile` with those on the install documentation. The steps below were written with a Digital Ocean droplet (docker pre-installed) in mind.
 
-##Get yourself a Droplet
+##Production vs Development
+This Dockerfile assumes you want to run Carto with SSL, which requires a few configuration steps beyond just building the docker container.  The biggest difference from other Dockerfiles is setting the `production` environment variables, and then adding ssl certificates to the nginx configuration.
+
+This build also makes use of Docker volumes, so that the the data can persist.  This should allow for an easier upgrade path when new versions of the core components are release.
+
+##How to Build
+
+###Get yourself a Droplet
 We have had success installing Carto in a Docker container on a Digital Ocean droplet with 8GB of Ram, 80GB Storage and 4 cores, which runs $80/month.  You can choose an Ubuntu 16.04 image with Docker preinstalled and save yourself some time.  SSH into that bad boy and get ready to Docker.
 
-##Build the Container
+###Edit the sample app_config.yml
+You will need a FQDN with an A record pointing to your server's IP address.  You need to edit `config/app_config.sample.yml`, and replace every instance of 'yourdomain.com' with your domain name and save the file as `app_config.yml`.  The dockerfile will insert this into the new container during the build process. 
+
+
+###Build the Container
 Go make a sandwich and watch some youtube videos, this will take a while... (About an hour as of the time I wrote this)
 ```
 git clone https://github.com/chriswhong/docker-cartodb.git
 docker build -t="cartodb" docker-cartodb/
 ```
-##Run the Container
+###Run the Container
 This command runs the container with the three main services mapped to the host machine.  `3000` for the frontend, `8080` for the Windshaft Map Tiler (Maps API), and `8181` for the SQL API.
-`docker run -d -p 3000:3000 -p 8080:8080 -p 8181:8181 cartodb`
+Use `docker run -d -p 3000:3000 -p 8080:8080 -p 8181:8181 cartodb` the first time you run it.
+
+If you are replacing an existing container built with this image, add the `--volumes from` flag like `docker run --volumes-from {id of old container} -d -p 3001:3000 -p 8081:8080 -p 8182:8181 cartodb`  
 
 You can't connect from the outside world until you setup nginx to forward specific URLs to the three ports
 
-##Configure Nginx
+###Configure Nginx
 
-Install nginx `apt-get install nginx` and then copy `config/cartodb.nginx.proxy.conf` from this repo to `/etc/nginx/conf.d/` and restart nginx `service nginx restart`
+Install nginx `apt-get install nginx` and then copy `config/cartodb.nginx.proxy.conf` from this repo to `/etc/nginx/conf.d/`. 
 
-##Configure hosts
-The droplet is now listening for web connections on port 80, but it's listening for a specific host name: `cartodb.local`.  This isn't a real domain, so you need to manually edit your local `hosts` file (located at `/private/etc/hosts` on a mac).  Add a new line `{your server's IP address} cartodb.localhost`
+Use `certbot-auto` to quickly install SSL certificates for your domain.  Take note of where it tells you it stored the new SSL certificates
 
-Fire up your browser and go to `http://cartodb.localhost` and you should be greeted with a carto login screen.
-The scripts created an individual account:  `dev/pass1234`
-and an organization with a default account: `admin4example/pass1234`
+Edit the file to include your production domain name and the paths to the SSL certificates.
 
-##To use a Real Domain
-I have done this, but not recently.  IIRC, you just need to swap out every place where you see "cartodb.localhost" in `app_config.yml` and enter your domain name, then set up a DNS record to point to the IP address of your server.  You can connect to the docker container's command line with `docker exec -it <yourcontainerid> bin/bash`, make changes to the `app_config.yml` and then restart the container.  It will reload the rails app with the new settings.
+Restart nginx `service nginx restart`
 
-##To configure SSL
-I have also done this, but not recently.  I believe it is set up as an NGINX proxy.  You can use letsencrypt to quickly get a free SSL cert for your droplet, then configure nginx to listen for https traffic and send it all to the carto docker container which is still listening on http as it always was.  The trick is that the urls that the app sends to the browser may be http so you can get mixed content errors, so you have to make more changes to `app_config.yml` to tell it to embed https urls in links.  This is kind of a brain dump, and I will recreate the steps someday and document them here.
+###Users
+The Dockerfile will create a user named `admin` with a default password of `pass1234`.  You should change this when you first login.
 
-##To enable GZIP
+###To enable GZIP
 This can also be done in nginx, you just need to enable gzip and add the mime types that carto uses.  
 
-##To use carto-served vector tiles
+###To use carto-served vector tiles
 This is unrelated to carto in Docker, but It's exciting so I thought I would share it.  [See this gist](http://bl.ocks.org/chriswhong/2695b75fd1936bd034df83c91738648d) 
 
 ##Attribution
