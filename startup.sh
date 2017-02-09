@@ -7,10 +7,10 @@ service redis-server start
 service varnish start
 
 cd /Windshaft-cartodb
-node app.js development &
+node app.js production &
 
 cd /CartoDB-SQL-API
-node app.js development &
+node app.js production &
 
 cd /cartodb
 source /usr/local/rvm/scripts/rvm

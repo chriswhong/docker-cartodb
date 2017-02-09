@@ -103,6 +103,8 @@ ENV PATH=$PATH:/opt/rubies/ruby-2.2.3/bin
 RUN gem install bundler &&\
 gem install compass
 
+ENV RAILS_ENV production
+
 #Carto Editor
 RUN git clone --recursive https://github.com/CartoDB/cartodb.git &&\
 cd cartodb &&\
@@ -110,7 +112,7 @@ wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py &&\
 python /tmp/get-pip.py &&\
 apt-get install -q -y python-all-dev &&\
 apt-get install -q -y imagemagick unp zip &&\
-RAILS_ENV=production bundle install &&\
+bundle install &&\
 npm install 
 
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
@@ -121,14 +123,13 @@ RUN cd cartodb && pip install --no-use-wheel -r python_requirements.txt
 
 
 #Config Files
-ADD ./config/CartoDB-dev.js \
+ADD ./config/SQLAPI-prod.js \
       /CartoDB-SQL-API/config/environments/production.js
-ADD ./config/WS-dev.js \
+ADD ./config/WS-prod.js \
       /Windshaft-cartodb/config/environments/production.js
 ADD ./config/app_config.yml /cartodb/config/app_config.yml
 ADD ./config/database.yml /cartodb/config/database.yml
 ADD ./config/grunt_production.json /cartodb/config/grunt_production.json
-
 
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -145,14 +146,13 @@ RUN cd cartodb &&\
 
 RUN service postgresql start && service redis-server start &&\
     cd cartodb &&\
-    RAILS_ENV=production bundle exec rake db:create &&\ 
-    RAILS_ENV=production bundle exec rake db:migrate &&\
+    bundle exec rake db:create &&\ 
+    bundle exec rake db:migrate &&\
     service postgresql stop && service redis-server stop
 
-ADD ./create_dev_user /cartodb/script/create_dev_user
-ADD ./setup_organization.sh /cartodb/script/setup_organization.sh
+ADD ./create_user /cartodb/script/create_user
 RUN service postgresql start && service redis-server start && \
-	bash -l -c "cd /cartodb && bash script/create_dev_user || bash script/create_dev_user && bash script/setup_organization.sh" && \
+	bash -l -c "cd /cartodb && bash script/create_user" && \
 	service postgresql stop && service redis-server stop
 
 
@@ -161,5 +161,8 @@ EXPOSE 3000 8080 8181
 ENV GDAL_DATA /usr/share/gdal/2.1
 
 ADD ./startup.sh /opt/startup.sh
+ADD ./config/varnish /etc/default/varnish
+
+VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 
 CMD ["/bin/bash", "/opt/startup.sh"]
