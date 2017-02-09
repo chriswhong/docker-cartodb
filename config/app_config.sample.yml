@@ -1,0 +1,527 @@
+defaults: &defaults
+  # If uncommented, most images like static map previews and twitter card image urls will use this CDN urls
+  #cdn_url:
+  #  http:             "http.cdn.host"
+  #  https:            "https.cdn.host"
+  http_client_logs: true
+  ogr2ogr:
+    binary:           'which ogr2ogr2.1'
+    csv_guessing:     true
+  debug_assets: true
+  mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
+  session_domain:     'yourdomain.com'
+  # If activated, urls will use usernames in format //SESSION_DOMAIN/user/USERNAME and ignore subdomains if present
+  subdomainless_urls: true
+  http_port:           # 3000 # nil|integer. HTTP port to use when building urls. Leave empty to use default (80)
+  https_port:          # nil|integer. HTTPS port to use when building urls. Leave empty to use default (443)
+  secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
+  account_host:       'yourdomain.com'
+  account_path:       '/account'
+  vizjson_cache_domains: ['.localhost']
+  data_library:
+    username:         'common-data'
+    path:             '/data-library'
+  disable_file:       '~/disable'
+  watcher:
+    ttl:              60
+  tiler:
+    filter: 'mapnik'
+    internal:
+      protocol:      'http'
+      domain:        ''
+      port:          '8181'
+      host:          '127.0.0.1'
+      verifycert:     false
+    private:
+      protocol:      'https'
+      domain:        'yourdomain.com'
+      port:          '443'
+      verifycert:     false
+    public:
+      protocol:      'https'
+      domain:        'yourdomain.com'
+      port:          '443'
+      verifycert:     false
+  sql_api:
+    private:
+      protocol:   'https'
+      domain:     'yourdomain.com'
+      endpoint:   '/api/v2/sql'
+      port:       443
+    public:
+      protocol:   'htts'
+      domain:     'yourdomain.com'
+      endpoint:   '/api/v2/sql'
+      port:       443
+  api_requests_service_url: ''
+  developers_host:    'http://developers.cartodb.localhost:3000'
+  google_analytics:
+    primary:          ''
+    embeds:           ''
+    domain:           ''
+  rollbar_api_key: ''
+  tumblr:
+    api_key: ''
+  trackjs:
+    enabled: false
+    customer: ''
+    app_keys:
+      editor: ''
+      embeds: ''
+  facebook:
+    app_id: ''
+    admins: ''
+  hubspot: ''
+  segment:
+    api_key:
+  common_data:
+    protocol: 'https'
+    username: 'common-data'
+    base_url: 'https://common-data.carto.com'
+    format: 'shp'
+    generate_every: 86400
+  explore_api:
+    username: ''
+  reports:
+    mail_to: ''
+  mailer:
+    from: 'cartodb.localhost <support@cartodb.localhost>'
+    address: ''
+    port: ''
+    user_name: ''
+    password: ''
+    authentication: ''
+    enable_starttls_auto: ''
+  varnish_management:
+    critical: false
+    host: '127.0.0.1'
+    port: 6082
+    purge_command: 'purge'
+    retries: 5
+    timeout: 5
+    # 'warning' or 'error'
+    trigger_verbose: true
+  invalidation_service:
+    enabled: false
+    host: '127.0.0.1'
+    port: 3142
+    retries: 5 # number of retries before considering failure
+    critical: false # either the failure is considered an error or a warning
+    timeout: 5 # socket timeout
+    trigger_verbose: true
+  redis:
+    host: '127.0.0.1'
+    port: 6379
+    connect_timeout: 2
+    read_timeout: 3
+    write_timeout: 5
+    databases:
+      tables_metadata:     0
+      api_credentials:     3
+      users_metadata:      5
+      redis_migrator_logs: 6
+  org_metadata_api:
+    host: 'localhost.lan'
+    port: '3000'
+    username: "extension"
+    password: "elephant"
+    timeout: 10
+  superadmin:
+    username: "superadmin"
+    password: "monkey"
+  geocoder:
+    #force_batch: true
+    #disable_cache: true
+    app_id: ''
+    token:  ''
+    mailto: ''
+    base_url: ''
+    non_batch_base_url: ''
+    internal:
+      username: ''
+      api_key: ''
+    cache:
+      base_url: ''
+      api_key: ''
+      table_name: ''
+  user_migrator:
+    user_exports_folder: '/tmp/user_exports'
+    user_imports_folder: '/tmp/user_imports'
+    s3:
+      access_key_id: ''
+      secret_access_key: ''
+      bucket_name: ''
+      url_ttl: 7200
+      async_long_uploads: false
+    uploads_path: 'public/uploads'
+  exporter:
+    exporter_temporal_folder: '/tmp/exporter'
+    s3:
+      access_key_id: ''
+      secret_access_key: ''
+      bucket_name: ''
+      url_ttl: 7200
+      async_long_uploads: false
+    uploads_path: 'public/uploads' # including 'uploads' assumes public path. Absolute path example: /tmp/exports/downloads
+  importer:
+    blacklisted_ip_addr: []
+    content_guessing:        # Depends on geocoding
+      enabled:         false # Disabled if false or not present
+      threshold:       0.9   # 90% or more matches
+      minimum_entropy: 0.9   # Normalized entropy, between 0.0 and 1.0. See http://en.wikipedia.org/wiki/Entropy_(information_theory)
+      sample_size:     400   # +-5% error. See http://en.wikipedia.org/wiki/Sample_size_determination#Estimating_proportions_and_means
+    s3:
+      access_key_id:
+      secret_access_key:
+      bucket_name:
+      url_ttl:
+      async_long_uploads: false
+      proxy_uri:
+      use_ssl: True
+
+    unp_temporal_folder: '/tmp/imports/'
+    # It must end in `/uploads` and be accessible via HTTP, if relative will default to Rails.Root/#{uploads_path}
+    uploads_path: 'public/uploads'
+  error_track:
+    url: 'https://viz2.carto.com/api/v1/sql'
+    percent_users: 10
+  # graphite endpoint used to post frontend stats
+  graphite_public:
+    host: ""
+    port:
+  layer_opts:
+    public_opts: ["type", "active", "query", "opacity", "auto_bound",
+                  "interactivity", "debug", "visible", "tiler_domain",
+                  "tiler_port", "tiler_protocol", "sql_domain", "sql_port",
+                  "sql_protocol", "extra_params", "table_name",
+                  "user_name", "style_version", "tile_style", "query_wrapper"]
+    default_tile_styles:
+      point: "{\n  marker-fill: #FF6600;\n  marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}"
+      geometry: "{\n // points\n [mapnik-geometry-type=point] {\n    marker-fill: #FF6600;\n    marker-opacity: 1;\n    marker-width: 12;\n    marker-line-color: white;\n    marker-line-width: 3;\n    marker-line-opacity: 0.9;\n    marker-placement: point;\n    marker-type: ellipse;marker-allow-overlap: true;\n  }\n\n //lines\n [mapnik-geometry-type=linestring] {\n    line-color: #FF6600; \n    line-width: 2; \n    line-opacity: 0.7;\n  }\n\n //polygons\n [mapnik-geometry-type=polygon] {\n    polygon-fill:#FF6600;\n    polygon-opacity: 0.7;\n    line-opacity:1;\n    line-color: #FFFFFF;\n   }\n }"
+      polygon: "{\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  line-opacity:1;\n  line-color: #FFFFFF;\n}"
+      multipolygon: "{\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  line-opacity:1;\n  line-color: #FFFFFF;\n}"
+      multilinestring: "{\n  line-color:#FF6600;\n  line-width:1;\n  line-opacity: 0.7;\n}"
+    data:
+      kind: "carto"
+      options:
+        # attribution:        'CARTO attribution'
+        query:              ""
+        opacity:            0.99
+        auto_bound:         false
+        interactivity:      "cartodb_id"
+        debug:              false
+        visible:            true
+        tiler_domain:       "cartodb.localhost"
+        tiler_port:         "8181"
+        tiler_protocol:     "http"
+        sql_domain:         "cartodb.localhost"
+        sql_port:           "8080"
+        sql_protocol:       "http"
+        extra_params:       { cache_policy: 'persist' }
+        tile_style_history: []
+        style_version:      "2.1.1"
+      infowindow:
+        template_name:      "table/views/infowindow_light"
+    background:
+      kind: "background"
+      options: { color: '#ffffff' }
+  cartodb_com_hosted: false
+  cartodb_central_domain_name: 'yourdomain.com'
+  aws:
+    s3:
+      access_key_id: "test"
+      secret_access_key: "test"
+  assets:
+    s3_bucket_name: "tests"
+    max_file_size: 5242880 # 5.megabytes
+  app_assets:
+    asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
+  avatars:
+    gravatar_enabled: true
+    base_url: '//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars'
+    kinds: ['ghost', 'marker', 'mountain', 'pacman', 'planet', 'star']
+    colors: ['green', 'orange', 'red', 'yellow']
+  dropbox_api_key: ""
+  gdrive:
+    api_key: ""
+    app_id: ""
+  # This enables a support chat within editor
+  # Use your Olark api id to enable it. If you remove this entry or don't define an app key, it won't be activated.
+  olark:
+    app_id: ''
+  enforce_non_empty_layer_css: false
+  users_dumps:
+    service:
+      port: 00000
+  http_header_authentication:
+    header: # name of the trusted, safe header that your server adds to the request
+    field: # 'email' / 'username' / 'id' / 'auto' (autodetection)
+    autocreation: # true / false (true requires field to be email)
+  oauth:
+    # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
+    # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
+    gdrive:
+      application_name:     ''
+      client_id:            ''
+      client_secret:        ''
+      callback_url:         'https://carto.com'
+    # google_plus:
+      # client_id: ''
+      # cookie_policy: 'single_host_origin'
+      # cookie_policy: 'https://cartodb-staging.com'
+    github:
+      client_id:            ''
+      client_secret:        ''
+    dropbox:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
+    box:
+      application_name:     ''
+      client_id:            ''
+      client_secret:        ''
+      box_host:             "app.box.com"
+    instagram:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
+    # Mailchimp datasource. Setup at https://admin.mailchimp.com/account/oauth2/ then fill here.
+    # If fields are present but empty, option won't appear at editor import window
+    mailchimp:
+      app_key:              ''
+      app_secret:           ''
+      callback_url:         ''
+  datasource_search:
+    # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
+    twitter_search:
+      standard:
+        auth_required:          false
+        username:               ''
+        password:               ''
+        search_url:             'http://fake.url.nil'
+        ratelimit_active:       true
+        ratelimit_concurrency:  8
+        ratelimit_ttl:          4
+        ratelimit_wait_secs:    0.5
+      customized_user_list:     []
+      customized_orgs_list:     []
+      entity_to_config_map:     [] # { user_or_org_name: 'custom_config_name'}
+      customized:
+        custom1:
+            auth_required:          false
+            username:               ''
+            password:               ''
+            search_url:             'http://fake.url.nil'
+            ratelimit_active:       false
+            ratelimit_concurrency:  3
+            ratelimit_ttl:          4
+            ratelimit_wait_secs:    0.1
+  basemaps:
+    Nokia:
+      normal_day:
+        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
+        minZoom: '0'
+        maxZoom: '21'
+        className:    "nokia_normal_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+        name: 'Nokia normal Day'
+      terrain_day:
+        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/terrain.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
+        minZoom: '0'
+        maxZoom: '21'
+        className:    "nokia_terrain_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+        name: 'Nokia Terrain Day'
+      satellite_day:
+        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
+        minZoom: '0'
+        maxZoom: '21'
+        className:    "nokia_satellite_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+        name: 'Nokia Satellite Day'
+      hybrid_day:
+        url: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?lg=eng&token=A7tBPacePg9Mj_zghvKt9Q&app_id=KuYppsdXZznpffJsKT24'
+        minZoom: '0'
+        maxZoom: '21'
+        className:    "nokia_hybrid_day"
+        attribution:  "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>"
+        name: 'Nokia hybrid Day'
+    CARTO:
+      positron_rainbow_labels:
+        default: true
+        url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Positron'
+        className: 'positron_rainbow_labels'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        labels:
+          url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
+      dark_matter_rainbow_labels:
+        url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Dark matter'
+        className: 'dark_matter_rainbow_labels'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        labels:
+          url: 'http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'
+      positron_rainbow:
+        url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Positron (labels below)'
+        className: 'positron_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      dark_matter_rainbow:
+        url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Dark matter (labels below)'
+        className: 'dark_matter_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      positron_lite_rainbow:
+        url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Positron (lite)'
+        className: 'positron_lite_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      dark_matter_lite_rainbow:
+        url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Dark matter (lite)'
+        className: 'dark_matter_lite_rainbow'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+      eco_cartodb:
+        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '10'
+        name: 'CARTO World Eco'
+        className: 'eco_cartodb'
+        attribution: ''
+      flat_blue:
+        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-flatblue/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '10'
+        name: 'CARTO World Flat Blue'
+        className: 'flat_blue'
+        attribution: ''
+      midnight_cartodb:
+        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-midnight/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '10'
+        name: 'CARTO World Midnight Commander'
+        className: 'midnight_cartodb'
+        attribution: ''
+      antique_cartodb:
+        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: 0
+        maxZoom: 10
+        name: 'CARTO World Antique'
+        className: 'antique_cartodb'
+        attribution: ''
+    Stamen:
+      toner_stamen_labels:
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner'
+        className: 'toner_stamen_labels'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+        labels:
+          url: 'https://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png'
+      toner_stamen:
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner (labels below)'
+        className: 'toner_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+      toner_background_stamen:
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner Background'
+        className: 'toner_background_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+      toner_lite_stamen:
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner Lite'
+        className: 'toner_lite_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+      toner_lines_stamen:
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lines/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner Lines'
+        className: 'toner_lines_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+      toner_hybrid_stamen:
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Toner Hybrid'
+        className: 'toner_hybrid_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+      watercolor_stamen:
+        url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Watercolor'
+        className: 'watercolor_stamen'
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+  overviews:
+    min_rows: 2000000
+    statement_timeout: 1800000
+    tolerance_px: 1.0
+
+development:
+  <<: *defaults
+  #http_port: 3000
+  varnish_management:
+    critical: false
+    host: '127.0.0.1'
+    port: 6082
+    purge_command: 'purge'
+    url_purge_command: 'url.purge'
+    retries: 5
+    timeout: 5
+  enforce_non_empty_layer_css: false
+
+test:
+  <<: *defaults
+  http_port: 53716
+  redis:
+    host: '127.0.0.1'
+    port: 6335
+  enforce_non_empty_layer_css: false
+  api_requests_es_service:
+    url: "http://api-calls-service.cartodb.localhost/search"
+    body: ""
+
+staging:
+  <<: *defaults
+
+production:
+  <<: *defaults
