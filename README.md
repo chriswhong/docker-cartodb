@@ -3,6 +3,9 @@ This is a dockerized production Carto(DB) installation, based on the official [C
 
 You should be able to map most of the steps in the `Dockerfile` with those on the install documentation. The steps below were written with a Digital Ocean droplet (docker pre-installed) in mind.
 
+![dockerizecarto](https://cloud.githubusercontent.com/assets/1833820/22806442/1703bcac-eef0-11e6-8826-33a126932d23.png)
+
+
 ##Production vs Development
 This Dockerfile assumes you want to run Carto with SSL, which requires a few configuration steps beyond just building the docker container.  The biggest difference from other Dockerfiles is setting the `production` environment variables, and then adding ssl certificates to the nginx configuration.
 
