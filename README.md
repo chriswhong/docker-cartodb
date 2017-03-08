@@ -47,6 +47,11 @@ Restart nginx `service nginx restart`
 ###Users
 The Dockerfile will create a user named `admin` with a default password of `pass1234`.  You should change this when you first login.
 
+To make more users, run the `create_user` script from inside the running container.  `docker exec -it {containerid} /bin/bash` The script is in `/cartodb/script/create_user` edit it to set the new username and password, then run it `sh create_user`
+
+###Revert to old Editor
+We are using this carto server strictly as a tile/data service, so the builder is not needed, but is enabled by default.  To disable it, you must run SQL `update users set builder_enabled = 't' where username = 'myusername';` To run this sql, run a command prompt in the running container `docker exec -it {containerid} /bin/bash` Once you are in, switch to postgres user `su postgres` and use psql to connect `psql -d carto_db_production`
+
 ###To enable GZIP
 This can also be done in nginx, you just need to enable gzip and add the mime types that carto uses.  
 
