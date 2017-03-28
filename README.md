@@ -44,10 +44,21 @@ Edit the file to include your production domain name and the paths to the SSL ce
 
 Restart nginx `service nginx restart`
 
-###Users
+### Users
 The Dockerfile will create a user named `admin` with a default password of `pass1234`.  You should change this when you first login.
 
 To make more users, run the `create_user` script from inside the running container.  `docker exec -it {containerid} /bin/bash` The script is in `/cartodb/script/create_user` edit it to set the new username and password, then run it `sh create_user`
+
+### Add more map layers to a User's Account
+User accounts will only be allowed to add 4 layers to a map in the editor by default, you can change this by using the rails console.
+First get to the command line in your container: `docker exec -it {containerid} /bin/bash`
+```
+cd cartodb
+bundle exec rails c
+u = User.find(username:'username')
+u.max_layers = 15
+u.save
+```
 
 ###Revert to old Editor
 We are using this carto server strictly as a tile/data service, so the builder is not needed, but is enabled by default.  To disable it, you must run SQL `update users set builder_enabled = false where username = 'myusername';` To run this sql, run a command prompt in the running container `docker exec -it {containerid} /bin/bash` Once you are in, switch to postgres user `su postgres` and use psql to connect `psql -d carto_db_production`
