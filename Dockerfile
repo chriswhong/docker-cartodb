@@ -152,23 +152,21 @@ ENV LC_ALL en_US.UTF-8
 
 
 RUN cd cartodb &&\
-    npm install npm@2.14.9 -g &&\
-    npm -v &&\
     export PATH=$PATH:$PWD/node_modules/grunt-cli/bin &&\
     bundle install &&\
     bundle exec grunt --environment production
 
 RUN service postgresql start && service redis-server start &&\
     cd cartodb &&\
-    bundle exec rake db:create &&\ 
+    bundle exec rake db:create &&\
     bundle exec rake db:migrate &&\
     service postgresql stop && service redis-server stop
+
 
 ADD ./create_user /cartodb/script/create_user
 RUN service postgresql start && service redis-server start && \
 	bash -l -c "cd /cartodb && bash script/create_user" && \
 	service postgresql stop && service redis-server stop
-
 
 EXPOSE 3000 8080 8181
 
