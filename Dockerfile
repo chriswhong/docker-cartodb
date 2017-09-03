@@ -19,6 +19,14 @@ RUN apt-get install -q -y git
 #apt tools
 RUN apt-get install -q -y python-software-properties
 
+RUN add-apt-repository ppa:cartodb/gcc &&\
+ apt-get update 
+
+RUN apt-get install -q -y gcc-4.9 g++-4.9
+
+ENV CC=/usr/bin/gcc-4.9 
+ENV CXX=/usr/bin/g++-4.9
+
 #postgresql
 RUN add-apt-repository ppa:cartodb/postgresql-9.5 && apt-get update
 
@@ -72,8 +80,12 @@ RUN add-apt-repository ppa:cartodb/redis && apt-get update
 RUN apt-get install -q -y redis-server
 
 #nodejs
-RUN add-apt-repository ppa:cartodb/nodejs-010 && apt-get update &&\
+RUN add-apt-repository ppa:cartodb/nodejs &&\
+apt-get update &&\
 apt-get install -q -y nodejs
+
+RUN apt-get install -q -y libpixman-1-0 libpixman-1-dev
+RUN apt-get install -q -y libcairo2-dev libjpeg-dev libgif-dev libpango1.0-dev
 
 #SQL API
 RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git &&\
@@ -84,8 +96,7 @@ npm install
 #MAPS API:
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git &&\
 cd Windshaft-cartodb &&\
-git checkout 2.87.3 &&\
-apt-get install -q -y libpango1.0-dev &&\
+git checkout master &&\
 npm install
 
 #Ruby
@@ -109,9 +120,12 @@ ENV RAILS_ENV production
 RUN git clone --recursive https://github.com/CartoDB/cartodb.git &&\
 cd cartodb &&\
 wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py &&\
-python /tmp/get-pip.py &&\
-apt-get install -q -y python-all-dev &&\
-apt-get install -q -y imagemagick unp zip &&\
+python /tmp/get-pip.py 
+
+RUN apt-get install -q -y python-all-dev &&\
+apt-get install -q -y imagemagick unp zip 
+
+RUN cd cartodb &&\
 bundle install &&\
 npm install 
 
