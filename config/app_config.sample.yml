@@ -49,7 +49,7 @@ defaults: &defaults
       endpoint:   '/api/v2/sql'
       port:       443
     public:
-      protocol:   'htts'
+      protocol:   'https'
       domain:     'yourdomain.com'
       endpoint:   '/api/v2/sql'
       port:       443
