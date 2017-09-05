@@ -7,9 +7,6 @@ PASSWORD="pass1234"
 ADMIN_PASSWORD="pass1234"
 EMAIL="dev@example.com"
 
-echo "--- Creating databases"
-bundle exec rake cartodb:db:setup
-
 echo "--- Create '${SUBDOMAIN}' user"
 bundle exec rake cartodb:db:create_user --trace SUBDOMAIN="${SUBDOMAIN}" \
 	PASSWORD="${PASSWORD}" ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
