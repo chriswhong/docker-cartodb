@@ -63,6 +63,10 @@ u.save
 ### Revert to old Editor
 We are using this carto server strictly as a tile/data service, so the builder is not needed, but is enabled by default.  To disable it, you must run SQL `update users set builder_enabled = false where username = 'myusername';` To run this sql, run a command prompt in the running container `docker exec -it {containerid} /bin/bash` Once you are in, switch to postgres user `su postgres` and use psql to connect `psql -d carto_db_production`
 
+### Enable Private Maps
+
+`UPDATE users SET private_maps_enabled = 't';`
+
 ### To enable GZIP
 This can also be done in nginx, you just need to enable gzip and add the mime types that carto uses.  
 
