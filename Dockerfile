@@ -1,4 +1,5 @@
 FROM ubuntu:12.04
+
 RUN locale-gen en_US.UTF-8 &&\
 	update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 RUN apt-get update &&\
@@ -50,9 +51,55 @@ createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres &
 createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres && \
 service postgresql stop
 
+#Ruby
+RUN apt-get install -q -y wget &&\
+wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz &&\
+tar -xzvf ruby-install-0.5.0.tar.gz &&\
+cd ruby-install-0.5.0/ &&\
+make install
+
+RUN apt-get -q -y install libreadline6-dev openssl &&\
+ruby-install ruby 2.2.3
+
+ENV PATH=$PATH:/opt/rubies/ruby-2.2.3/bin
+
+RUN gem install bundler &&\
+gem install compass
+
+ENV RAILS_ENV production
+
+#redis
+RUN add-apt-repository ppa:cartodb/redis && apt-get update
+
+RUN apt-get install -q -y redis-server
+
+#nodejs
+RUN add-apt-repository ppa:cartodb/nodejs &&\
+apt-get update &&\
+apt-get install -q -y nodejs
+
+RUN apt-get install -q -y libpixman-1-0 libpixman-1-dev
+RUN apt-get install -q -y libcairo2-dev libjpeg-dev libgif-dev libpango1.0-dev
+
+RUN apt-get install -q -y python-all-dev &&\
+apt-get install -q -y imagemagick unp zip
+
+RUN wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py &&\
+python /tmp/get-pip.py
+
+RUN pip install --upgrade pip==9.0.0
+
+### CARTO COMPONENTS SPECIFIC VERSIONS
+ENV cartodb_postgresql_version=0.21.0
+ENV cartodb_version=v4.11.59
+ENV cartodb_windshaft_version=5.0.0
+ENV cartodb_sql_api_version=1.48.1
+
 #carto postgres extension
 RUN git clone https://github.com/CartoDB/cartodb-postgresql.git &&\
 cd cartodb-postgresql &&\
+git checkout $cartodb_postgresql_version &&\
+PGUSER=postgres make all &&\
 PGUSER=postgres make install
 
 #GIS dependencies
@@ -74,56 +121,22 @@ RUN service postgresql start && \
   ldconfig &&\
   service postgresql stop
 
-#redis
-RUN add-apt-repository ppa:cartodb/redis && apt-get update
-
-RUN apt-get install -q -y redis-server
-
-#nodejs
-RUN add-apt-repository ppa:cartodb/nodejs &&\
-apt-get update &&\
-apt-get install -q -y nodejs
-
-RUN apt-get install -q -y libpixman-1-0 libpixman-1-dev
-RUN apt-get install -q -y libcairo2-dev libjpeg-dev libgif-dev libpango1.0-dev
-
 #SQL API
 RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git &&\
 cd CartoDB-SQL-API &&\
-git checkout master &&\
+git checkout $cartodb_sql_api_version &&\
 npm install 
 
 #MAPS API:
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git &&\
 cd Windshaft-cartodb &&\
-git checkout master &&\
+git checkout $cartodb_windshaft_version &&\
 npm install
-
-#Ruby
-RUN apt-get install -q -y wget &&\
-wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz &&\
-tar -xzvf ruby-install-0.5.0.tar.gz &&\
-cd ruby-install-0.5.0/ &&\
-make install
-
-RUN apt-get -q -y install libreadline6-dev openssl &&\
-ruby-install ruby 2.2.3 
-
-ENV PATH=$PATH:/opt/rubies/ruby-2.2.3/bin 
-
-RUN gem install bundler &&\
-gem install compass
-
-ENV RAILS_ENV production
 
 #Carto Editor
 RUN git clone --recursive https://github.com/CartoDB/cartodb.git &&\
 cd cartodb &&\
-wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py &&\
-python /tmp/get-pip.py 
-
-RUN apt-get install -q -y python-all-dev &&\
-apt-get install -q -y imagemagick unp zip 
+git checkout $cartodb_version
 
 RUN cd cartodb &&\
 bundle install &&\
@@ -134,7 +147,6 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 ENV PATH=$PATH:/usr/include/gdal
 
 RUN cd cartodb && pip install --no-use-wheel -r python_requirements.txt
-
 
 #Config Files
 ADD ./config/SQLAPI-prod.js \
@@ -154,7 +166,7 @@ ENV LC_ALL en_US.UTF-8
 RUN cd cartodb &&\
     export PATH=$PATH:$PWD/node_modules/grunt-cli/bin &&\
     bundle install &&\
-    bundle exec grunt --environment production
+    bundle exec grunt --environment=production
 
 RUN service postgresql start && service redis-server start &&\
     cd cartodb &&\
