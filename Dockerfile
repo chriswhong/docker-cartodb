@@ -97,7 +97,8 @@ npm install
 RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git &&\
 cd Windshaft-cartodb &&\
 git checkout master &&\
-npm install
+npm install -g yarn@0.27.5 &&\
+yarn install
 
 #Ruby
 RUN apt-get install -q -y wget &&\
