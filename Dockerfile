@@ -187,6 +187,6 @@ ENV GDAL_DATA /usr/share/gdal/2.1
 ADD ./startup.sh /opt/startup.sh
 ADD ./config/varnish /etc/default/varnish
 
-VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+VOLUME  ["/var/lib/postgresql", "/var/lib/redis"]
 
 CMD ["/bin/bash", "/opt/startup.sh"]
