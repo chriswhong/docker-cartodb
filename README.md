@@ -26,11 +26,18 @@ Go make a sandwich and watch some youtube videos, this will take a while... (Abo
 git clone https://github.com/chriswhong/docker-cartodb.git
 docker build -t="cartodb" docker-cartodb/
 ```
+
+### Create the volumes
+Create named volumes to be used by the container. This will allow to persist postgres and redis data across runs. 
+
+```
+sudo docker volume create cartodb-postgres
+sudo docker volume create cartodb-redis
+```
+
 ### Run the Container
 This command runs the container with the three main services mapped to the host machine.  `3000` for the frontend, `8080` for the Windshaft Map Tiler (Maps API), and `8181` for the SQL API.
-Use `docker run -d -p 3000:3000 -p 8080:8080 -p 8181:8181 cartodb` the first time you run it.
-
-If you are replacing an existing container built with this image, add the `--volumes from` flag like `docker run --volumes-from {id of old container} -d -p 3001:3000 -p 8081:8080 -p 8182:8181 cartodb`  
+Use `sudo docker run -d -v cartodb-postgres:/var/lib/postgresql -v cartodb-redis:/var/lib/redis -p 3000:3000 -p 8080:8080 -p 8181:8181 cartodb`.
 
 You can't connect from the outside world until you setup nginx to forward specific URLs to the three ports
 
