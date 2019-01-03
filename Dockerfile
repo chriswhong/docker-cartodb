@@ -111,7 +111,7 @@ ruby-install ruby 2.2.3
 
 ENV PATH=$PATH:/opt/rubies/ruby-2.2.3/bin 
 
-RUN gem install bundler &&\
+RUN gem install bundler --version=1.17.3 &&\
 gem install compass
 
 ENV RAILS_ENV production
